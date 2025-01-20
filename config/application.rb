@@ -1,15 +1,19 @@
 require_relative "boot"
-
+require_relative '../lib/json_error_handler'
 require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module DilicheckBackend
+module PsiGestionBackend
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+
+    config.middleware.use JsonErrorHandler
+
+    config.autoload_paths << Rails.root.join('app/services')
 
     # Configuration for the application, engines, and railties goes here.
     #
