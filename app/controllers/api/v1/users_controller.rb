@@ -28,7 +28,7 @@ class Api::V1::UsersController < ApplicationController
       render json: { message: "User created successfully", user: user }, status: :created
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: "Failed to create user in database", details: e.record.errors.full_messages }, status: :unprocessable_entity
-    rescue Auth0::Auth0Service::CustomAuth0Error => e
+    rescue Auth0::Auth0Error => e
       render json: { error: "Auth0 Error", details: e.message }, status: :internal_server_error
     rescue StandardError => e
       render json: { error: "Unexpected error", details: e.message }, status: :bad_request
@@ -63,7 +63,7 @@ class Api::V1::UsersController < ApplicationController
         update_user_auth0(user_params, @user.auth0_id)
         @user.save!
         render json: { message: "User updated successfully", user: @user }, status: :ok
-      rescue Auth0::Auth0Service::CustomAuth0Error => e
+      rescue Auth0::Auth0Error => e
         render json: { error: "Failed to update user in Auth0", details: e.message }, status: :unprocessable_entity
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: "Failed to update user in database", details: e.record.errors.full_messages }, status: :unprocessable_entity

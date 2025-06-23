@@ -2,50 +2,41 @@ require 'net/http'
 require 'json'
 
 module Auth0
-  class Auth0HttpClient
-    attr_reader :uri, :token
-
-    def initialize(uri:, token:)
-      @uri=uri
-      @token=token
+  class Auth0HttpClient < HttpClientBase
+    BASE_URL = "https://#{ENV['AUTH0_DOMAIN']}/api/v2/".freeze
+  
+    def initialize(token:)
+      @token = token
     end
-
-    def get_request
-      request = Net::HTTP::Post.new(uri)
-      prepare_request(request, token, body)
-      send_request(uri, request)
+  
+    def get(path:)
+      super(uri: build_uri(path), headers: default_headers)
     end
-
-    def post_request(body:)
-      request = Net::HTTP::Post.new(uri)
-      prepare_request(request, token, body)
-      send_request(uri, request)
+  
+    def post(path:, body:)
+      super(uri: build_uri(path), headers: default_headers, body: body)
     end
-
-    def patch_request(uri:, token:, body:)
-      request = Net::HTTP::Patch.new(uri)
-      prepare_request(request, token, body)
-      send_request(uri, request)
+  
+    def patch(path:, body:)
+      super(uri: build_uri(path), headers: default_headers, body: body)
     end
-
-    def delete_request(uri:, token:, body:)
-      request = Net::HTTP::Delete.new(uri)
-      prepare_request(request, token)
-      send_request(uri, request)
+  
+    def delete(path:)
+      super(uri: build_uri(path), headers: default_headers)
     end
-
+  
     private
-
-    def prepare_request(request, token, body = nil)
-      request["Authorization"] = "Bearer #{token}" if token
-      request["Content-Type"] = "application/json"
-      request.body = body.to_json if body
+  
+    def build_uri(path)
+      URI.parse("#{BASE_URL}#{path}")
     end
-
-    def send_request(uri, request)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.request(request)
+  
+    def default_headers
+      {
+        "Authorization" => "Bearer #{@token}",
+        "Content-Type" => "application/json"
+      }
     end
   end
+  
 end
