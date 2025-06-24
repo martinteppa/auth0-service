@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       get 'auth/failure', to: 'auth0#failure'
       delete 'logout', to: 'auth0#logout'
       resources :companies, only: [:create, :show, :index, :update] do
-        resources :users, only: [:create, :show, :index, :update]
+        resources :users, only: [:create, :show, :index, :update, :destroy]
       end
       scope :payments do 
         post '/create_preference', to: 'payments#create_preference'

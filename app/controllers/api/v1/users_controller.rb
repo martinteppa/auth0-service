@@ -1,9 +1,11 @@
 class Api::V1::UsersController < ApplicationController
   CREATE_UPDATE_USER_PERMISSION = ["create:users", "update:users"].freeze
   READ_USER_PERMISSION = ["read:users"].freeze
+  DELETE_USER_PERMISSION = ["delete:users"].freeze
 
   before_action -> { validate_permissions(CREATE_UPDATE_USER_PERMISSION) }, only: [:create, :update]
   before_action -> { validate_permissions(READ_USER_PERMISSION) }, only: [:get_all, :show]
+  before_action -> { validate_permissions(DELETE_USER_PERMISSION) }, only: [:destroy]
 
   # before_action :set_current_user, only: [:show]
 
@@ -46,7 +48,17 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def destroy
-    p "nothing"
+    begin
+      Auth0::Auth0Service.new.delete_user(user_auth0_id: @user.auth0_id)
+      @user.destroy!
+      render json: { message: "User deleted successfully" }, status: :ok
+    rescue Auth0::Auth0Error => e
+      render json: { error: "Failed to delete user in Auth0", details: e.message }, status: :unprocessable_entity
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render json: { error: "Failed to delete user in database", details: e.record.errors.full_messages }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { error: "Unexpected error", details: e.message }, status: :internal_server_error
+    end
   end
 
   def update
