@@ -9,7 +9,8 @@
 #  updated_at    :datetime         not null
 #
 class Company < ApplicationRecord
-  has_many :users, dependent: :destroy  # Relación uno a muchos
+  has_many :users, dependent: :destroy
+  has_many :articles, dependent: :destroy
 
   validates :name, presence: true
   validates :database_name, presence: true
