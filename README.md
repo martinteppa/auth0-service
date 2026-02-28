@@ -1,24 +1,37 @@
-# README
+# Auth0 Service – Rails App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This Rails application provides an integration with the Auth0 authentication service.  
+It allows authentication and authorization using Auth0 as the identity provider.
 
-Things you may want to cover:
+---
 
-* Ruby version
+## 🚀 Running the Application
 
-* System dependencies
+The project is fully containerized using Docker.
 
-* Configuration
+To build and start the application, run:
 
-* Database creation
+```bash
+docker compose up -d --build
+```
 
-* Database initialization
+This command will:
 
-* How to run the test suite
+Build the Docker images
+Start all required services
+Run the app in detached mode
 
-* Services (job queues, cache servers, search engines, etc.)
+To stop the services:
 
-* Deployment instructions
+```bash
+docker compose down
+```
 
-* ...
+Before running the application, you must define the following environment variables:
+
+| Variable              | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `AUTH0_CLIENT_ID`     | The Client ID provided by Auth0                  |
+| `AUTH0_CLIENT_SECRET` | The Client Secret provided by Auth0              |
+| `AUTH0_DOMAIN`        | Your Auth0 domain (e.g. `your-tenant.auth0.com`) |
+| `AUTH0_AUDIENCE`      | The API audience configured in Auth0             |
